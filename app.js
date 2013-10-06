@@ -1,7 +1,9 @@
+//Oct 5 2013
 var fs = require('fs');
 var flickr = require('flickr-with-uploads');
 var http = require('http');
-var file;
+var fullpath = '/home/vk/Загрузки/Fisher3.jpg';
+extraslist = "tags='dog,cat'";
 
 var api = flickr(
   '63b283b748057fcd5fdcd9d67a7dda75', // consumer_key
@@ -11,9 +13,14 @@ var api = flickr(
 
 */
 
-var fullpath = '/home/vk/Загрузки/Fisher3.jpg';
 
-extraslist = "tags='dog,cat'";
+
+function getfiles(){
+var file;
+var photourl = new Array();
+var i = 1;
+var request;
+var filename;
 // usually, the method name is precisely the name of the API method, as they are here:
     api({method: 'flickr.photos.getRecent', extras: extraslist}, function(err, response) {
 	console.log('Total:', response.photos.total);      
@@ -24,20 +31,52 @@ extraslist = "tags='dog,cat'";
 	//var text = JSON.stringify(response);
 	//console.log('Stringified:', text);
 	//var obj=JSON.parse(response);
-	//console.log('Parcing:', obj.photos);
-      //api({method: 'flickr.photosets.addPhoto', photoset_id: 1272356126, photo_id: new_photo_id}, function(err, response) {
-      //  console.log('Added photo to photoset:', response);
-      //});
-	//console.log(construct_photo_url("001", "002", "003", "004"));
-	var photourl;
-	var i = 10;
-	photourl = construct_photo_url(response.photos.photo[i].farm, response.photos.photo[i].server, response.photos.photo[i].id, response.photos.photo[10].secret);
-	console.log(photourl);
 	//
-	file = fs.createWriteStream("./yu/file.jpg");
-	var request = http.get(photourl, function(response) {response.pipe(file);});
-    });
+	for (i=1; i<10;i++){
+	console.log("i="+i);
+		photourl [i] = construct_photo_url(response.photos.photo[i].farm, response.photos.photo[i].server, 		  response.photos.photo[i].id, response.photos.photo[i].secret);
+	console.log(photourl[i]);
+	} //End of for	
+	//
+	});//End of API Callback
+	for (i=1; i<10;i++){
+	console.log('Next cycle');	
+	
+	filename= "./images/file"+i+".jpg";
+	file = fs.createWriteStream(filename);
+	request = http.get(photourl[i], function(response) {
+		response.pipe(file);
+		file.on('finish', function() {
+      		file.close();
+      		
+		});
+	});
+	console.log('download_file_wget '+ photourl[i]);
+	console.log('i='+i);
+	//download_file_wget(photourl[i]);
+	} //End of for	
 
+	//
+   
+
+}//End of function
+
+
+
+// Function to download file using wget
+function download_file_wget(file_url) {
+
+    // extract the file name
+    var file_name = url.parse(file_url).pathname.split('/').pop();
+    // compose the wget command
+    var wget = 'wget -P ' + DOWNLOAD_DIR + ' ' + file_url;
+    // excute wget using child_process' exec function
+
+    var child = exec(wget, function(err, stdout, stderr) {
+        if (err) throw err;
+        else console.log(file_name + ' downloaded to ' + DOWNLOAD_DIR);
+    });
+};
 //We create photo URL
 //Using this article
 //https://secure.flickr.com/services/api/misc.urls.html
@@ -49,6 +88,8 @@ return url;
 
 }
 
+//Do the job
+ getfiles();
 
 // the upload method is special, but this library automatically handles the
 // hostname change
