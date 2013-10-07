@@ -21,8 +21,10 @@ var photourl = new Array();
 var i = 1;
 var request;
 var filename;
+
 // usually, the method name is precisely the name of the API method, as they are here:
     api({method: 'flickr.photos.getRecent', extras: extraslist}, function(err, response) {
+	
 	console.log('Total:', response.photos.total);      
 	console.log('Response:', response.photos.photo[10].id);
 	console.log('Response:', response.photos.photo[10].secret);
@@ -37,25 +39,35 @@ var filename;
 		photourl [i] = construct_photo_url(response.photos.photo[i].farm, response.photos.photo[i].server, 		  response.photos.photo[i].id, response.photos.photo[i].secret);
 	console.log(photourl[i]);
 	} //End of for	
-	//
-	});//End of API Callback
-	for (i=1; i<10;i++){
-	console.log('Next cycle');	
 	
+	i=1;
+	for (var j in photourl){
+	console.log('Next cycle');	
+	//console.log("i="+i);
 	filename= "./images/file"+i+".jpg";
+	console.log(filename);
+	//console.log('download_file_wget '+ photourl[i]);
+	//console.log('i='+i);
+	//download_file_wget(photourl[i]);
+	
 	file = fs.createWriteStream(filename);
-	request = http.get(photourl[i], function(response) {
+	request = http.get(j, function(response) {
 		response.pipe(file);
 		file.on('finish', function() {
       		file.close();
-      		
-		});
-	});
-	console.log('download_file_wget '+ photourl[i]);
-	console.log('i='+i);
-	//download_file_wget(photourl[i]);
+      		});
+		file.on('data', function() {
+      		console.log(data);
+      		});
+	});	
+	i++;
 	} //End of for	
 
+
+	//
+	});//End of API Callback
+	
+	
 	//
    
 
