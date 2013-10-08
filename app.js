@@ -30,50 +30,40 @@ var filename;
 	console.log('Response:', response.photos.photo[10].secret);
 	console.log('Response:', response.photos.photo[10].server);
 	console.log('Response:', response.photos.photo[10].farm);
-	//var text = JSON.stringify(response);
-	//console.log('Stringified:', text);
-	//var obj=JSON.parse(response);
-	//
-	for (i=1; i<10;i++){
+
+	for (i=1; i<100;i++){
 	console.log("i="+i);
-		photourl [i] = construct_photo_url(response.photos.photo[i].farm, response.photos.photo[i].server, 		  response.photos.photo[i].id, response.photos.photo[i].secret);
+		photourl [i] = construct_photo_url(response.photos.photo[i].farm, response.photos.photo[i].server, response.photos.photo[i].id, response.photos.photo[i].secret);
 	console.log(photourl[i]);
 	} //End of for	
 	
-	i=1;
-	for (var j in photourl){
+	
+	for (i=1;i<100;i++){
+	
+
 	console.log('Next cycle');	
 	//console.log("i="+i);
 	filename= "./images/file"+i+".jpg";
 	console.log(filename);
-	//console.log('download_file_wget '+ photourl[i]);
-	//console.log('i='+i);
-	//download_file_wget(photourl[i]);
-	
-	file = fs.createWriteStream(filename);
-	request = http.get(j, function(response) {
-		response.pipe(file);
-		file.on('finish', function() {
-      		file.close();
-      		});
-		file.on('data', function() {
-      		console.log(data);
-      		});
-	});	
-	i++;
+	download(photourl[i], filename,{});
+
+
 	} //End of for	
 
-
-	//
-	});//End of API Callback
-	
-	
-	//
-   
+});//End of API Callback
 
 }//End of function
 
-
+var download = function(url, dest, cb) {
+  var file = fs.createWriteStream(dest);
+  var request = http.get(url, function(response) {
+    response.pipe(file);
+    file.on('finish', function() {
+      file.close();
+      //cb();
+    });
+  });
+}
 
 // Function to download file using wget
 function download_file_wget(file_url) {
@@ -103,31 +93,3 @@ return url;
 //Do the job
  getfiles();
 
-// the upload method is special, but this library automatically handles the
-// hostname change
-/*
-api({
-  method: 'upload',
-  title: 'My new pet??',
-  description: "Don't tell Woo!",
-  is_public: 0,
-  is_friend: 1,
-  is_family: 1,
-  hidden: 2,
-  photo: fs.createReadStream(fullpath)
-}, function(err, response) {
-  if (err) {
-    console.error('Could not upload photo:', err);
-  }
-  else {
-    var new_photo_id = response.photoid._content;
-    // usually, the method name is precisely the name of the API method, as they are here:
-    api({method: 'flickr.photos.getInfo', photo_id: new_photo_id}, function(err, response) {
-      console.log('Full photo info:', response);
-      api({method: 'flickr.photosets.addPhoto', photoset_id: 1272356126, photo_id: new_photo_id}, function(err, response) {
-        console.log('Added photo to photoset:', response);
-      });
-    });
-  }
-});
-*/
