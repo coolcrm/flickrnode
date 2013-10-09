@@ -38,17 +38,24 @@ var filename;
 	} //End of for	
 	
 	
-	for (i=1;i<100;i++){
+	//for (i=1;i<100;i++){
 	
 
 	console.log('Next cycle');	
 	//console.log("i="+i);
+	var i=1;
 	filename= "./images/file"+i+".jpg";
 	console.log(filename);
+	
+	require('async').eachLimit(photourl, 5, function(url, next){
+	  download(url, "./images/file"+(i++)+".jpg", next);
+		}, function(){
+		   console.log('finished');
+		})
 	download(photourl[i], filename,{});
 
-
-	} //End of for	
+	
+	//} //End of for	
 
 });//End of API Callback
 
