@@ -10,6 +10,7 @@ var photourl = new Array();
 var i = 1;
 var request;
 var filename;
+var resp_copy;
 
 
 var api = flickr(
@@ -25,22 +26,29 @@ var api = flickr(
 function getfiles(){
 async.series([
     function (){
-// usually, the method name is precisely the name of the API method, as they are here:
+	// usually, the method name is precisely the name of the API method, as they are here:
     api({method: 'flickr.photos.getRecent', extras: extraslist}, function(err, response) {
-	
+	//debugger;
 	console.log('Total:', response.photos.total);      
 	console.log('Response:', response.photos.photo[10].id);
 	console.log('Response:', response.photos.photo[10].secret);
 	console.log('Response:', response.photos.photo[10].server);
 	console.log('Response:', response.photos.photo[10].farm);
 
-	for (i=1; i<10;i++){
+	for (i=1; i<2;i++){
 	console.log("i="+i);
 		photourl [i] = construct_photo_url(response.photos.photo[i].farm, response.photos.photo[i].server, response.photos.photo[i].id, response.photos.photo[i].secret);
 	console.log(photourl[i]);
+
 	} //End of for	
-	
-	
+	resp_copy = response;
+	console.log('Resp-copy:', resp_copy);
+	debugger;
+	});//End of API Callback
+    console.log('Resp-copy:', resp_copy);
+	},
+    function() {
+	debugger; 
 	//for (i=1;i<100;i++){
 	
 
@@ -57,28 +65,19 @@ async.series([
 		})
 	download(photourl[i], filename,{});
 
-	
-	//} //End of for	
+}]);
+}//End of function getfiles
 
-});//End of API Callback
-
-},
-    function() {
-	// body...
-	var download = function(url, dest, cb) {
+var download = function(url, dest, cb) {
   var file = fs.createWriteStream(dest);
   var request = http.get(url, function(response) {
     response.pipe(file);
     file.on('finish', function() {
       file.close();
-      //cb();
+      cb();
     });
   });
 }
-}]);
-}//End of function getfiles
-
-
 
 
 //We create photo URL
