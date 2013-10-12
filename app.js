@@ -3,14 +3,14 @@ var fs = require('fs');
 var async = require('async');
 var flickr = require('flickr-with-uploads');
 var http = require('http');
-var fullpath = '/home/vk/Загрузки/Fisher3.jpg';
-extraslist = "tags='dog,cat'";
+extraslist = "";
+//var extraslist = "tags='dog,cat'";
 var file;
 var photourl = new Array();
 var i = 1;
 var request;
 var filename;
-var resp_copy;
+var response_copy;
 
 
 var api = flickr(
@@ -25,45 +25,55 @@ var api = flickr(
 
 function getfiles(){
 async.series([
-    function (){
+    function (callback){
+	debugger;
 	// usually, the method name is precisely the name of the API method, as they are here:
     api({method: 'flickr.photos.getRecent', extras: extraslist}, function(err, response) {
+	if ( err ) {
+        // handle the error safely
+        console.log('If was error of api!');
+    	}
+	else{
+	console.log('If was not a error!');
 	//debugger;
+	/*
 	console.log('Total:', response.photos.total);      
 	console.log('Response:', response.photos.photo[10].id);
 	console.log('Response:', response.photos.photo[10].secret);
 	console.log('Response:', response.photos.photo[10].server);
 	console.log('Response:', response.photos.photo[10].farm);
-
-	for (i=1; i<2;i++){
+	*/
+	debugger;
+	response_copy = response;
+	
+	for (i=1; i<10;i++){
 	console.log("i="+i);
-		photourl [i] = construct_photo_url(response.photos.photo[i].farm, response.photos.photo[i].server, response.photos.photo[i].id, response.photos.photo[i].secret);
+		photourl [i] = construct_photo_url(response_copy.photos.photo[i].farm, response_copy.photos.photo[i].server, response_copy.photos.photo[i].id, response_copy.photos.photo[i].secret);
 	console.log(photourl[i]);
-
+	
 	} //End of for	
-	resp_copy = response;
-	console.log('Resp-copy:', resp_copy);
+	} //End of else
 	debugger;
 	});//End of API Callback
-    console.log('Resp-copy:', resp_copy);
-	},
-    function() {
-	debugger; 
-	//for (i=1;i<100;i++){
 	
+    	callback();
+	},
+    function(callback) {
+	debugger; 
 
-	console.log('Next cycle');	
-	//console.log("i="+i);
-	var i=1;
-	filename= "./images/file"+i+".jpg";
-	console.log(filename);
+	console.log('Function 2');	
+
+	
+	//filename= "./images/file"+i+".jpg";
+	//console.log(filename);
 	
 	require('async').eachLimit(photourl, 5, function(url, next){
 	  download(url, "./images/file"+(i++)+".jpg", next);
 		}, function(){
 		   console.log('finished');
 		})
-	download(photourl[i], filename,{});
+
+	callback();
 
 }]);
 }//End of function getfiles
