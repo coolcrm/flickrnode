@@ -3,8 +3,8 @@ var fs = require('fs');
 var async = require('async');
 var flickr = require('flickr-with-uploads');
 var http = require('http');
-extraslist = "";
-//var extraslist = "tags='dog,cat'";
+var mytags = 'cat,dog';
+var extraslist = "tags=dog";
 var file;
 var photourl = new Array();
 var i = 1;
@@ -28,7 +28,8 @@ async.series([
     function (callback){
 	debugger;
 	// usually, the method name is precisely the name of the API method, as they are here:
-    api({method: 'flickr.photos.getRecent', extras: extraslist}, function(err, response) {
+    //api({method: 'flickr.photos.getRecent', extras: extraslist}, function(err, response) {
+api({method: 'flickr.photos.search', tags: mytags}, function(err, response) {
 	if ( err ) {
         // handle the error safely
         console.log('If was error of api!');
@@ -47,7 +48,7 @@ async.series([
 	debugger;
 	response_copy = response;
 	
-	for (i=0; i<10;i++){
+	for (i=0; i<100;i++){
 	console.log("i="+i);
 		photourl [i] = construct_photo_url(response_copy.photos.photo[i].farm, response_copy.photos.photo[i].server, response_copy.photos.photo[i].id, response_copy.photos.photo[i].secret);
 	console.log(photourl[i]);
