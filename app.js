@@ -38,17 +38,17 @@ api({method: 'flickr.photos.search', tags: mytags}, function(err, response) {
 	else{
 	console.log('If was not a error!');
 	//debugger;
-	
+	//* Debug info 
 	console.log('Total:', response.photos.total);      
 	console.log('Response:', response.photos.photo[10].id);
 	console.log('Response:', response.photos.photo[10].secret);
 	console.log('Response:', response.photos.photo[10].server);
 	console.log('Response:', response.photos.photo[10].farm);
-	
+	*/
 	debugger;
 	response_copy = response;
 	
-	for (i=0; i<100;i++){
+	for (i=0; i<10;i++){
 	console.log("i="+i);
 		photourl [i] = construct_photo_url(response_copy.photos.photo[i].farm, response_copy.photos.photo[i].server, response_copy.photos.photo[i].id, response_copy.photos.photo[i].secret);
 	console.log(photourl[i]);
